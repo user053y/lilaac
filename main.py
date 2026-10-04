@@ -64,17 +64,22 @@ async def chat_endpoint(request: ChatRequest):
     
     try:
         input_vector = vectorizer.transform([input_text])
-        # AI mengukur persentase keyakinannya
-        probs = model.predict_proba(input_vector)[0]
-        max_prob = max(probs)
-        prediksi_tag = model.classes_[probs.argmax()]
         
-        # Jika keyakinan di bawah 30%, AI mengaku tidak tahu
-        if max_prob < 0.3:
+        # PERBAIKAN: Jika kata-kata user sama sekali tidak ada di kamus dataset (skor 0)
+        if input_vector.nnz == 0:
             bot_reply = "Maaf, aku belum ngerti maksudmu."
             is_fallback = True
         else:
-            bot_reply = random.choice(responses_dict[prediksi_tag])
+            probs = model.predict_proba(input_vector)[0]
+            max_prob = max(probs)
+            prediksi_tag = model.classes_[probs.argmax()]
+            
+            # Jika keyakinan di bawah 40%
+            if max_prob < 0.4:
+                bot_reply = "Maaf, aku belum ngerti maksudmu."
+                is_fallback = True
+            else:
+                bot_reply = random.choice(responses_dict[prediksi_tag])
             
     except Exception as e:
         bot_reply = "Maaf, sistemku sedang bingung."
