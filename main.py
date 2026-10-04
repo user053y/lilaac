@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,10 +10,15 @@ import sys
 
 
 # --- 1. SETUP KONEKSI SUPABASE ---
-SUPABASE_URL = "MASUKKAN_URL_PROJECT_SUPABASE"
-SUPABASE_KEY = "MASUKKAN_API_KEY_ANON_SUPABASE"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Gunakan os.getenv() untuk menarik data dari Environment Variables Render
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
+# Pengecekan opsional: agar server langsung error jika kamu lupa mengisi variabel di Render
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Pastikan SUPABASE_URL dan SUPABASE_KEY sudah diisi di Environment Variables!")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # --- 2. TARIK DATA & LATIH AI SAAT SERVER MENYALA ---
 print("Mengunduh data pengetahuan dari Supabase...")
 try:
