@@ -8,6 +8,11 @@ from supabase import create_client, Client
 import sys
 
 
+# --- 1. SETUP KONEKSI SUPABASE ---
+SUPABASE_URL = "MASUKKAN_URL_PROJECT_SUPABASE"
+SUPABASE_KEY = "MASUKKAN_API_KEY_ANON_SUPABASE"
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 # --- 2. TARIK DATA & LATIH AI SAAT SERVER MENYALA ---
 print("Mengunduh data pengetahuan dari Supabase...")
 try:
